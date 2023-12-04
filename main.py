@@ -11,18 +11,20 @@ st.subheader(f"{option} for the next {days} days in {place}")
 
 # Get temp/sky data from the API
 if place:
-    data = get_data(place, days)
-
-    match option:
-        # Create temp plot
-        case "Temperature":
-            t = [dict["main"]["temp"] for dict in data]
-            d = [dict["dt_txt"] for dict in data]
-            figure = px.line(x=d, y=t, labels={"x": "Date", "y": "Temperature (C)"})
-            st.plotly_chart(figure)
-        # Create images of the sky
-        case "Sky":
-            sky = [dict["weather"][0]["main"] for dict in data]
-            images = {"Clear"}
-            for i in sky:
-                st.image(f"images/{i.lower()}.png", width=115)
+    try:
+        data = get_data(place, days)
+        match option:
+            # Create temp plot
+            case "Temperature":
+                t = [dict["main"]["temp"] for dict in data]
+                d = [dict["dt_txt"] for dict in data]
+                figure = px.line(x=d, y=t, labels={"x": "Date", "y": "Temperature (C)"})
+                st.plotly_chart(figure)
+            # Create images of the sky
+            case "Sky":
+                sky = [dict["weather"][0]["main"] for dict in data]
+                images = {"Clear"}
+                for i in sky:
+                    st.image(f"images/{i.lower()}.png", width=115)
+    except KeyError:
+        st.error("This place not exists")
